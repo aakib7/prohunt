@@ -1,0 +1,6 @@
+{
+    "jwtPrivateKey": "myPrivateKey",
+    "db": "mongodb://localhost/prohunt",
+    "port": "4000",
+    "sessionSecret": "MySessionSecret"
+  }
