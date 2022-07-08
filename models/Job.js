@@ -22,8 +22,8 @@ const jobSchema = mongoose.Schema({
         ref: "User",
     },
     createdAt:{
-        type:Date,
-        default:Date.now()
+        type: Date,
+        default: Date.now()
     },
     likes:[
         {
@@ -38,7 +38,7 @@ const jobSchema = mongoose.Schema({
                 ref: "User",
             },
             review: {
-                type:String,
+                type: String,
                 required: true,
             }
         },
@@ -50,7 +50,7 @@ const jobSchema = mongoose.Schema({
                 ref: "User",
             },
             bid: {
-                type:String,
+                type: String,
                 required: true,
             }
         },

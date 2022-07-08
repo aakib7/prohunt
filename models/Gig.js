@@ -22,8 +22,8 @@ const gigSchema = mongoose.Schema({
         ref: "User",
     },
     createdAt:{
-        type:Date,
-        default:Date.now()
+        type: Date,
+        default: Date.now()
     },
     likes:[
         {
@@ -50,7 +50,7 @@ const gigSchema = mongoose.Schema({
                 ref: "User",
             },
             offer: {
-                type:String,
+                type: String,
                 required: true,
             }
         },
