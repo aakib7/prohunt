@@ -11,6 +11,7 @@ const errorMiddleware = require("./middlewares/error");
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/api/users");
 var gigsRouter = require("./routes/api/gigs");
+var jobRouter = require("./routes/api/jobs");
 
 var app = express();
 
@@ -33,6 +34,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/", indexRouter);
 app.use("/user", usersRouter);
 app.use("/gigs", gigsRouter);
+app.use("/jobs", jobRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

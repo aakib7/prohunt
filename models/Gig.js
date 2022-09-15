@@ -37,14 +37,19 @@ const gigSchema = mongoose.Schema({
   ],
   reviews: [
     {
+      name: { type: String, required: true },
       user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
       },
-      review: {
+      comment: {
         type: String,
         required: true,
       },
+      rating: { type: Number, required: true },
+    },
+    {
+      timestamps: true,
     },
   ],
   offers: [
@@ -59,6 +64,16 @@ const gigSchema = mongoose.Schema({
       },
     },
   ],
+  rating: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
+  numReviews: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
 });
 
 module.exports = mongoose.model("Gig", gigSchema);

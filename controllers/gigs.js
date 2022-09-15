@@ -1,7 +1,10 @@
 const User = require("../models/User");
 const Gig = require("../models/Gig");
 
-exports.gigs = async (req, res) => {
+// @desc    Fetch all gigs
+// @route   GET /gigs
+// @access  Public
+exports.getGigs = async (req, res) => {
   try {
     // filters and search
     const page = Number(req.query.page) - 1 || 0;
@@ -149,5 +152,56 @@ exports.deleteGig = async (req, res) => {
       success: false,
       message: err.message,
     });
+  }
+};
+
+// @desc    Create new review
+// @route   POST /gigs/:id/reviews
+// @access  Private
+
+exports.createReview = async (req, res, next) => {
+  try {
+    let alreadyReviewed = false;
+    let owner = false;
+
+    const { rating, comment } = req.body;
+    const gig = await Gig.findById(req.params.id);
+
+    if (!gig) {
+      return res.status(404).json({ success: false, message: "Gig Not Found" });
+    }
+    if (gig.owner.toString() === req.user._id.toString()) {
+      return res
+        .status(400)
+        .json({ success: false, message: "You Can't Review your Own Gig" });
+    }
+
+    if (gig) {
+      alreadyReviewed = gig.reviews.find(
+        (review) => review.user.toString() === req.user._id.toString()
+      );
+    }
+    if (alreadyReviewed) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Already Reviewed" });
+    }
+    const review = {
+      name: req.user.firstName + " " + req.user.lastName,
+      rating: Number(rating),
+      comment,
+      user: req.user._id,
+    };
+
+    gig.reviews.push(review);
+    gig.numReviews = gig.reviews.length;
+    gig.rating =
+      gig.reviews.reduce((acc, item) => item.rating + acc, 0) /
+      gig.reviews.length;
+
+    await gig.save();
+    res.status(201).json({ success: true, message: "Review added" });
+  } catch (error) {
+    res.status(505).json({ success: false, message: error.message });
   }
 };
