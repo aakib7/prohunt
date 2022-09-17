@@ -110,6 +110,12 @@ exports.createGig = async (req, res) => {
 exports.singleGig = async (req, res) => {
   try {
     const gig = await Gig.findById(req.params.id);
+    if (!gig) {
+      return res.status(404).json({
+        success: false,
+        message: "Gig not Found",
+      });
+    }
     return res.status(201).json({ success: true, gig });
   } catch (error) {
     res.status(500).json({
@@ -137,7 +143,7 @@ exports.deleteGig = async (req, res) => {
       });
     }
     await gig.remove();
-    // after removing the post from post we have to delete post from user's posts list
+    // after removing the gig from gigs we have to delete gig from user's posts list
     const user = await User.findById(req.user._id);
     const index = user.gigs.indexOf(req.params.id);
     user.gigs.splice(index, 1);
@@ -145,12 +151,12 @@ exports.deleteGig = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Post Delete Successfully",
+      message: "Gig Delete Successfully",
     });
-  } catch (err) {
+  } catch (error) {
     res.status(500).json({
       success: false,
-      message: err.message,
+      message: error.message,
     });
   }
 };
@@ -202,6 +208,6 @@ exports.createReview = async (req, res, next) => {
     await gig.save();
     res.status(201).json({ success: true, message: "Review added" });
   } catch (error) {
-    res.status(505).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 };

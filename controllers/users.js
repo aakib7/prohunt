@@ -62,6 +62,27 @@ exports.register = async (req, res, next) => {
   }
 };
 
+// upload Profile Picture
+exports.uploadPicture = async (req, res, next) => {
+  try {
+    let user = await User.findById(req.user._id);
+    if (req.file) {
+      user.avatar.public_id = req.file.filename;
+      user.avatar.url = req.file.path;
+    }
+    await user.save();
+    return res.status(200).json({
+      success: true,
+      image: user.avatar.url,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 // login
 
 exports.login = async (req, res) => {
