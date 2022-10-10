@@ -148,10 +148,10 @@ exports.createReview = async (req, res, next) => {
   try {
     let alreadyReviewed = false;
     const { rating, comment } = req.body;
-    if (!rating && !comment) {
+    if (!rating || !comment) {
       return res
         .status(400)
-        .json({ success: false, message: "Rating and comment is required" });
+        .json({ success: false, message: "Rating and comment is Required" });
     }
     const job = await Job.findById(req.params.id);
     if (!Job) {

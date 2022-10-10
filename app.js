@@ -9,9 +9,11 @@ const errorMiddleware = require("./middlewares/error");
 
 // geting the routes api
 var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/api/users");
-var gigsRouter = require("./routes/api/gigs");
+var userRouter = require("./routes/api/users");
+var gigRouter = require("./routes/api/gigs");
 var jobRouter = require("./routes/api/jobs");
+var blogRouter = require("./routes/api/blogs");
+var bidRouter = require("./routes/api/bids");
 
 var app = express();
 
@@ -35,9 +37,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // user the routes (define paths) api
 app.use("/", indexRouter);
-app.use("/user", usersRouter);
-app.use("/gigs", gigsRouter);
+app.use("/user", userRouter);
+app.use("/gigs", gigRouter);
 app.use("/jobs", jobRouter);
+app.use("/blog", blogRouter);
+app.use("/bid", bidRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

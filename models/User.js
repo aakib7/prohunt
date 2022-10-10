@@ -36,6 +36,17 @@ const userSchema = mongoose.Schema({
       ref: "Job",
     },
   ],
+  blogs: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "BlogPost",
+    },
+  ],
+  likes: {
+    blog: [],
+    gigs: [],
+    jobs: [],
+  },
   role: String,
   resetPasswordToken: String,
   resetPasswordExpire: Date,

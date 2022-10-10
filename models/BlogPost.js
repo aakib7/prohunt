@@ -1,20 +1,18 @@
 const mongoose = require("mongoose");
-
-const jobSchema = mongoose.Schema({
+const blogSchema = mongoose.Schema({
   title: {
     type: String,
-    required: [true, "Please enter title for the gig"],
+    required: [true, "Please enter title for the Your Post."],
   },
   description: {
     type: String,
     required: [true, "Please enter description"],
   },
-  price: {
-    type: Number,
-    required: [true, "Please set price for gig"],
+  category: {
+    type: String,
+    required: [true, "Please Selete Category"],
   },
   image: {
-    public_id: String,
     url: String,
   },
   owner: {
@@ -48,23 +46,11 @@ const jobSchema = mongoose.Schema({
       timestamps: true,
     },
   ],
-  bids: [
-    {
-      owner: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-      description: {
-        type: String,
-        required: true,
-      },
-      createdAt: {
-        type: Date,
-        default: Date.now(),
-      },
-      status: { type: Boolean, default: false },
-    },
-  ],
+  rating: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
   numReviews: {
     type: Number,
     required: true,
@@ -72,4 +58,4 @@ const jobSchema = mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Job", jobSchema);
+module.exports = mongoose.model("BlogPost", blogSchema);

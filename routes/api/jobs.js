@@ -7,6 +7,7 @@ const {
   deleteJob,
   createReview,
 } = require("../../controllers/jobs");
+
 const { isAuthenticated } = require("../../middlewares/auth");
 
 router.get("/", getJobs);

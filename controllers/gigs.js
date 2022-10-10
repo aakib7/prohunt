@@ -99,10 +99,10 @@ exports.createGig = async (req, res) => {
     await user.save();
 
     return res.status(201).json({ success: true, newGig });
-  } catch (e) {
+  } catch (error) {
     res.status(500).json({
       success: false,
-      message: e.message,
+      message: error.message,
     });
   }
 };
@@ -131,6 +131,9 @@ exports.totalGigs = async (req, res) => {
   res.send(`length is ${gig.length}`);
 };
 
+// @desc    Delete gig
+// @route   delete /gigs//deletegig/:id
+// @access  Private
 exports.deleteGig = async (req, res) => {
   try {
     const gig = await Gig.findById(req.params.id);
@@ -171,6 +174,11 @@ exports.createReview = async (req, res, next) => {
     let owner = false;
 
     const { rating, comment } = req.body;
+    if (!rating || !comment) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Comment and Rating is Required" });
+    }
     const gig = await Gig.findById(req.params.id);
 
     if (!gig) {

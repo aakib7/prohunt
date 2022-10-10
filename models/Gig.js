@@ -54,7 +54,7 @@ const gigSchema = mongoose.Schema({
   ],
   offers: [
     {
-      user: {
+      owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
       },
