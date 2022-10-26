@@ -194,7 +194,8 @@ exports.changePassword = async (req, res) => {
 // get current user profile me
 exports.myProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).populate("gigs");
+    // const user = await User.findById(req.user._id).populate("gigs");
+    const user = await User.findById(req.user._id);
     return res.status(200).json({
       success: true,
       user,
