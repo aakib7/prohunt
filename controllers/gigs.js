@@ -51,7 +51,8 @@ exports.getGigs = async (req, res) => {
       .in([...categories])
       .sort(sortBy)
       .skip(page * limit)
-      .limit(limit);
+      .limit(limit)
+      .populate("owner");
     return res.status(201).json({
       success: true,
       Gigs: Gigs,
@@ -66,6 +67,7 @@ exports.getGigs = async (req, res) => {
 
 exports.createGig = async (req, res) => {
   try {
+    console.log("create gig Request");
     const gig = await Gig.find({ owner: req.user._id });
     if (gig.length == 5) {
       return res.status(400).json({
@@ -136,6 +138,7 @@ exports.totalGigs = async (req, res) => {
 // @access  Private
 exports.deleteGig = async (req, res) => {
   try {
+    console.log("Delete Gig");
     const gig = await Gig.findById(req.params.id);
     if (!gig) return res.status(404).send("Gig Not Found");
 

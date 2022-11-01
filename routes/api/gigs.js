@@ -10,10 +10,10 @@ const {
 } = require("../../controllers/gigs");
 const { isAuthenticated } = require("../../middlewares/auth");
 
-router.get("/", getGigs);
 router.post("/creategig", isAuthenticated, createGig);
-router.get("/:id", singleGig);
+router.get("/", getGigs);
 router.get("/get", isAuthenticated, totalGigs);
+router.get("/:id", singleGig);
 router.delete("/deletegig/:id", isAuthenticated, deleteGig);
 router.post("/:id/reviews", isAuthenticated, createReview);
 

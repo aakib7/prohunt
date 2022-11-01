@@ -14,6 +14,7 @@ var gigRouter = require("./routes/api/gigs");
 var jobRouter = require("./routes/api/jobs");
 var blogRouter = require("./routes/api/blogs");
 var bidRouter = require("./routes/api/bids");
+var categoryRouter = require("./routes/api/category");
 
 var app = express();
 
@@ -42,6 +43,7 @@ app.use("/gigs", gigRouter);
 app.use("/jobs", jobRouter);
 app.use("/blog", blogRouter);
 app.use("/bid", bidRouter);
+app.use("/category", categoryRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -9,6 +9,11 @@ const userSchema = mongoose.Schema({
     required: [true, "Please Enter a Name"],
     unique: [true, "UserName already exists"],
   },
+  role: {
+    type: String,
+    required: true,
+    default: "freelancer",
+  },
   email: {
     type: String,
     required: [true, "Please Enter a Name"],
