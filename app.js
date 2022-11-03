@@ -6,6 +6,7 @@ var logger = require("morgan");
 var expressLayouts = require("express-ejs-layouts");
 var bodyParser = require("body-parser");
 const errorMiddleware = require("./middlewares/error");
+var cors = require("cors");
 
 // geting the routes api
 var indexRouter = require("./routes/index");
@@ -27,6 +28,13 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+// app.use(cors());
+const corsConfig = {
+  credentials: true,
+  origin: true,
+};
+app.use(cors(corsConfig));
+
 // public folder access without /public/...
 // app.use(express.static(path.join(__dirname, "public")));
 // public folder access with /public/...

@@ -111,7 +111,7 @@ exports.createGig = async (req, res) => {
 
 exports.singleGig = async (req, res) => {
   try {
-    const gig = await Gig.findById(req.params.id);
+    const gig = await Gig.findById(req.params.id).populate("owner");
     if (!gig) {
       return res.status(404).json({
         success: false,
@@ -175,7 +175,6 @@ exports.createReview = async (req, res, next) => {
   try {
     let alreadyReviewed = false;
     let owner = false;
-
     const { rating, comment } = req.body;
     if (!rating || !comment) {
       return res
@@ -188,9 +187,10 @@ exports.createReview = async (req, res, next) => {
       return res.status(404).json({ success: false, message: "Gig Not Found" });
     }
     if (gig.owner.toString() === req.user._id.toString()) {
-      return res
-        .status(400)
-        .json({ success: false, message: "You Can't Review your Own Gig" });
+      return res.json({
+        success: false,
+        message: "You Can't Review your Own Gig",
+      });
     }
 
     if (gig) {
@@ -199,9 +199,7 @@ exports.createReview = async (req, res, next) => {
       );
     }
     if (alreadyReviewed) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Already Reviewed" });
+      return res.json({ success: false, message: "Already Reviewed" });
     }
     const review = {
       name: req.user.firstName + " " + req.user.lastName,
@@ -219,6 +217,55 @@ exports.createReview = async (req, res, next) => {
     await gig.save();
     res.status(201).json({ success: true, message: "Review added" });
   } catch (error) {
+    console.log("in cTXH");
     res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Like and dislike Giga
+// @route   Get /gig/:id/likes
+// @access  private
+exports.likeUnlikeGig = async function (req, res, next) {
+  try {
+    console.log("like");
+    const gig = await Gig.findById(req.params.id);
+    const user = await User.findById(req.user._id);
+
+    if (!gig) {
+      return res.status(404).json({ success: true, message: "Gig Not Found" });
+    }
+
+    // if already like so dislike the gig
+    if (gig.likes.includes(req.user._id)) {
+      // find that user index in the array of likes
+      const index = gig.likes.indexOf(req.user._id);
+      // find that like in that users likes
+      const user_like_index = user.likes.gigs.indexOf(req.params.id);
+
+      // delete that id from likes array
+      gig.likes.splice(index, 1);
+      user.likes.gigs.splice(user_like_index, 1);
+
+      await gig.save();
+      await user.save();
+      return res.status(200).json({
+        success: true,
+        message: "Post Unliked",
+      });
+    } else {
+      gig.likes.push(req.user._id);
+      user.likes.gigs.push(req.params.id);
+      await gig.save();
+      await user.save();
+      return res.status(200).json({
+        success: true,
+        message: "Post Liked",
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
