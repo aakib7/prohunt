@@ -9,7 +9,7 @@ const blogSchema = mongoose.Schema({
     required: [true, "Please enter description"],
   },
   category: {
-    type: String,
+    type: Array,
     required: [true, "Please Selete Category"],
   },
   image: {

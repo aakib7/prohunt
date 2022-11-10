@@ -7,7 +7,49 @@ const Job = require("../models/Job");
 
 exports.getJobs = async (req, res, next) => {
   try {
-    const jobs = await Job.find({});
+    // filters and search
+    const page = Number(req.query.page) - 1 || 0;
+    const limit = Number(req.query.limit) || 5;
+    const search = req.query.search || "";
+    let sort = req.query.sort || "price";
+    let category = req.query.category || "All";
+    let priceRange = { $gte: "0" };
+
+    let categories = [
+      "Web Development",
+      "Content Writing",
+      "Mobile App Development",
+      "Game Development",
+    ];
+
+    category === "All"
+      ? (category = [...categories])
+      : (categories = req.query.category.split(","));
+
+    req.query.sort ? (sort = req.query.sort.split(",")) : (sort = [sort]);
+
+    let sortBy = {};
+    if (sort[1]) {
+      sortBy[sort[0]] = sort[1];
+    } else {
+      sortBy[sort[0]] = "asc";
+    }
+    if (req.query.price) {
+      priceRange = JSON.stringify(req.query.price);
+      priceRange = JSON.parse(
+        priceRange.replace(/\b(gt|gte|lt|lte)\b/g, (key) => `$${key}`)
+      );
+    }
+    const jobs = await Job.find({
+      title: { $regex: search, $options: "i" },
+      price: priceRange,
+    })
+      .where("category")
+      .in([...categories])
+      .sort(sortBy)
+      .skip(page * limit)
+      .limit(limit)
+      .populate("owner");
     if (!jobs) {
       res.status(404).json({
         success: false,

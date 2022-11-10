@@ -70,6 +70,10 @@ const jobSchema = mongoose.Schema({
     required: true,
     default: 0,
   },
+  category: {
+    type: Array,
+    required: [true, "Please Selete Category"],
+  },
 });
 
 module.exports = mongoose.model("Job", jobSchema);

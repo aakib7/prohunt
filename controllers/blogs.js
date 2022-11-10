@@ -121,7 +121,46 @@ exports.singleBlog = async (req, res, next) => {
 // @access  public
 exports.blogs = async (req, res, next) => {
   try {
-    const blog = await BlogPost.find({}).populate("owner", "firstName");
+    const page = Number(req.query.page) - 1 || 0;
+    const limit = Number(req.query.limit) || 5;
+    const search = req.query.search || "";
+    let sort = req.query.sort || "price";
+    let category = req.query.category || "All";
+    let priceRange = { $gte: "0" };
+
+    let categories = [
+      "Web Development",
+      "Content Writing",
+      "Mobile App Development",
+      "Game Development",
+    ];
+
+    category === "All"
+      ? (category = [...categories])
+      : (categories = req.query.category.split(","));
+
+    req.query.sort ? (sort = req.query.sort.split(",")) : (sort = [sort]);
+
+    let sortBy = {};
+    if (sort[1]) {
+      sortBy[sort[0]] = sort[1];
+    } else {
+      sortBy[sort[0]] = "asc";
+    }
+
+    //  req.query.price; // in obj like { gt: '1200', lt: '2000' }
+    // console.log(priceRange);
+    // price gt and lt -> add $ for mongo
+
+    const blog = await BlogPost.find({
+      title: { $regex: search, $options: "i" },
+    })
+      .where("category")
+      .in([...categories])
+      .sort(sortBy)
+      .skip(page * limit)
+      .limit(limit)
+      .populate("owner");
     res.status(200).json({ success: true, post: blog });
   } catch (error) {
     res.status(500).json({
