@@ -14,8 +14,8 @@ const { isAuthenticated } = require("../../middlewares/auth");
 router.post("/create", isAuthenticated, createPost);
 router.delete("/delete/:id", isAuthenticated, deleteBlog);
 router.put("/update/:id", isAuthenticated, updateBlog);
-router.get("/", isAuthenticated, blogs);
-router.get("/:id", isAuthenticated, singleBlog);
+router.get("/", blogs);
+router.get("/:id", singleBlog);
 router.post("/:id/reviews", isAuthenticated, createReview);
 router.get("/:id/likes", isAuthenticated, likeUnlikePost);
 

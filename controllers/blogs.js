@@ -108,6 +108,9 @@ exports.updateBlog = async (req, res, next) => {
 exports.singleBlog = async (req, res, next) => {
   try {
     const blog = await BlogPost.findById(req.params.id).populate("owner");
+    if (!blog) {
+      res.status(404).json({ success: false, massage: "Blog Not Found" });
+    }
     res.status(200).json({ success: true, post: blog });
   } catch (error) {
     res.status(500).json({
@@ -187,14 +190,13 @@ exports.createReview = async (req, res, next) => {
 
     const blog = await BlogPost.findById(req.params.id);
     if (!blog) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Blog Not Found" });
+      return res.send({ success: false, message: "Blog Not Found" });
     }
     if (blog.owner.toString() === req.user._id.toString()) {
-      return res
-        .status(400)
-        .json({ success: false, message: "You Can't Review your Own blog" });
+      return res.send({
+        success: false,
+        message: "You Can't Review your Own blog",
+      });
     }
 
     if (blog) {
@@ -203,9 +205,7 @@ exports.createReview = async (req, res, next) => {
       );
     }
     if (alreadyReviewed) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Already Reviewed" });
+      return res.send({ success: false, message: "Already Reviewed" });
     }
     const review = {
       name: req.user.firstName + " " + req.user.lastName,
@@ -236,7 +236,7 @@ exports.likeUnlikePost = async function (req, res, next) {
     const user = await User.findById(req.user._id);
 
     if (!blog) {
-      return res.status(404).json({ success: true, message: "Blog Not Found" });
+      return res.send({ success: true, message: "Blog Not Found" });
     }
 
     // if already like so dislike the post/blog
@@ -252,7 +252,7 @@ exports.likeUnlikePost = async function (req, res, next) {
 
       await blog.save();
       await user.save();
-      return res.status(200).json({
+      return res.send({
         success: true,
         message: "Post Unliked",
       });
@@ -261,7 +261,7 @@ exports.likeUnlikePost = async function (req, res, next) {
       user.likes.blog.push(req.params.id);
       await blog.save();
       await user.save();
-      return res.status(200).json({
+      return res.send({
         success: true,
         message: "Post Liked",
       });
