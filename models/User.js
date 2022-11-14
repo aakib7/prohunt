@@ -7,7 +7,7 @@ const userSchema = mongoose.Schema({
   userName: {
     type: String,
     required: [true, "Please Enter a Name"],
-    unique: [true, "UserName already exists"],
+    unique: true,
   },
   role: {
     type: String,
@@ -51,6 +51,9 @@ const userSchema = mongoose.Schema({
     blog: [],
     gigs: [],
     jobs: [],
+  },
+  about: {
+    type: String,
   },
   role: String,
   resetPasswordToken: String,

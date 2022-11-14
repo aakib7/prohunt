@@ -5,33 +5,40 @@ const config = require("config");
 const ErrorHandler = require("../utils/errorHandler");
 
 exports.register = async (req, res, next) => {
+  console.log(req.body);
   try {
-    let { userName, email, password, firstName, lastName, country } = req.body;
+    let { email, password, firstName, lastName, country, role, userName } =
+      req.body;
     let user = await User.findOne({ userName });
-
     if (user) {
-      return next(new ErrorHandler("User name already Taken", 400));
+      return res.send({
+        success: false,
+        message: "User already exist with this User Name",
+      });
     }
 
     let user1 = await User.findOne({ email });
     if (user1) {
-      return res.status(400).json({
+      return res.send({
         success: false,
         message: "User already exist with this email",
       });
     } else {
       let salt = await bcrypt.genSalt(10);
       password = await bcrypt.hash(password, salt);
-      user = await User.create({
+
+      let user = await User.create({
         userName,
         email,
         password,
         firstName,
         lastName,
         country,
+        role,
         avatar: { public_id: "sample_id", url: "sample_url" },
       });
       // user will automatacally login after registration
+      console.log(user);
 
       const token = jwt.sign(
         {
@@ -50,11 +57,11 @@ exports.register = async (req, res, next) => {
         })
         .json({
           success: true,
-          user,
           token,
         });
     }
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -204,6 +211,28 @@ exports.myProfile = async (req, res) => {
     res.status(500).json({
       success: false,
       message: err.message,
+    });
+  }
+};
+
+exports.updateUser = async (req, res) => {
+  try {
+    if (!req.body) {
+      return res.send({ success: false, message: "Enter Somthing" });
+    }
+    await User.findByIdAndUpdate(req.user._id, req.body);
+    if (req.file) {
+      let u = await User.findById(req.user._id);
+      u.avatar.public_id = req.file.filename;
+      u.avatar.url = req.file.path;
+      await u.save();
+    }
+    const user = await User.findById(req.user._id);
+    return res.send({ success: true, user });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
     });
   }
 };
