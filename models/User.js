@@ -56,6 +56,14 @@ const userSchema = mongoose.Schema({
     type: String,
   },
   role: String,
+  verified: {
+    type: Boolean,
+    default: false,
+  },
+  joined: {
+    type: Date,
+    default: Date.now,
+  },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
 });

@@ -8,6 +8,7 @@ const {
   changePassword,
   uploadPicture,
   updateUser,
+  varifyAccount,
 } = require("../../controllers/users");
 const { isAuthenticated } = require("../../middlewares/auth");
 const { uploadProfilePicture } = require("../../middlewares/uploadFiles");
@@ -29,6 +30,7 @@ router.post("/register", register);
 router.post("/login", login);
 router.get("/logout", logout);
 router.get("/me", isAuthenticated, myProfile);
+router.get("/:id/verify/:token/", varifyAccount);
 router.post("/changepassword", isAuthenticated, changePassword);
 router.put("/update", isAuthenticated, upload.single("users"), updateUser);
 
