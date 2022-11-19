@@ -271,3 +271,93 @@ exports.varifyAccount = async (req, res, next) => {
     res.status(500).send({ success: false, message: "Internal Server Error" });
   }
 };
+
+// forget password apis
+
+exports.forgetPassword = async (req, res, next) => {
+  try {
+    let user = await User.findOne({ email: req.body.email });
+    if (!user) {
+      return res.status(409).json({
+        success: false,
+        message: "User with given email does not exist!",
+      });
+    }
+
+    // if (!user.verified) {
+    //   return res.status(401).json({
+    //     success: false,
+    //     message: "Your email is not varified",
+    //   });
+    // }
+
+    let token = await Token.findOne({ userId: user._id });
+    if (!token) {
+      token = await new Token({
+        userId: user._id,
+        token: crypto.randomBytes(32).toString("hex"),
+      }).save();
+    }
+
+    const url = `http://localhost:3000/password-reset/${user._id}/${token.token}/`;
+    let message = `<h2>Plese click the bellow link to set a new password.</h2>
+      <a href=${url}>${url}</a>`;
+    await sendEmail(user.email, "Password Reset", message);
+
+    res.status(200).json({
+      success: true,
+      message: "Password reset link sent to your email account",
+    });
+  } catch (error) {
+    res.status(500).json({ seccess: false, message: "Internal Server Error" });
+  }
+};
+
+// exports.varifyPasswordLink = async (req, res, next) => {
+//   try {
+//     const user = await User.findOne({ _id: req.params.id });
+//     if (!user)
+//       return res.status(400).json({ success: false, message: "Invalid link" });
+
+//     const token = await Token.findOne({
+//       userId: user._id,
+//       token: req.params.token,
+//     });
+//     if (!token)
+//       return res.status(400).json({ success: true, message: "Invalid link" });
+
+//     res.status(200).send("Valid Url");
+//   } catch (error) {
+//     res.status(500).send({ message: "Internal Server Error" });
+//   }
+// };
+
+exports.setNewPassword = async (req, res, next) => {
+  try {
+    console.log("r");
+    const user = await User.findOne({ _id: req.params.id });
+    if (!user) {
+      return res.status(400).json({ success: false, message: "Invalid link" });
+    }
+    const token = await Token.findOne({
+      userId: user._id,
+      token: req.params.token,
+    });
+    if (!token) {
+      return res.status(400).json({ success: false, message: "Invalid link" });
+    }
+    if (!user.verified) {
+      user.verified = true;
+    }
+    let salt = await bcrypt.genSalt(10);
+    const newPassword = await bcrypt.hash(req.body.password, salt);
+    user.password = newPassword;
+    await user.save();
+    await token.remove();
+    res
+      .status(200)
+      .json({ success: true, message: "Password reset successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
