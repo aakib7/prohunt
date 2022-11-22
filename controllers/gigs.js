@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const Gig = require("../models/Gig");
+const ObjectId = require("mongodb").ObjectId;
 
 // @desc    Fetch all gigs
 // @route   GET /gigs
@@ -67,7 +68,6 @@ exports.getGigs = async (req, res) => {
 
 exports.createGig = async (req, res) => {
   try {
-    console.log("create gig Request");
     const gig = await Gig.find({ owner: req.user._id });
     if (gig.length == 5) {
       return res.status(400).json({
@@ -87,6 +87,7 @@ exports.createGig = async (req, res) => {
       description: req.body.description,
       price: req.body.price,
       category: req.body.category,
+      deliveredTime: req.body.deliveredTime,
 
       image: {
         public_id: "req.body.image",
@@ -227,7 +228,6 @@ exports.createReview = async (req, res, next) => {
 // @access  private
 exports.likeUnlikeGig = async function (req, res, next) {
   try {
-    console.log("like");
     const gig = await Gig.findById(req.params.id);
     const user = await User.findById(req.user._id);
 
@@ -264,6 +264,42 @@ exports.likeUnlikeGig = async function (req, res, next) {
     }
   } catch (error) {
     res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.updateGig = async (req, res) => {
+  try {
+    console.log(req.body);
+    if (Object.keys(req.body).length === 0) {
+      return res.send({ success: false, message: "Enter Somthing" });
+    }
+    const gig = await Gig.findById(req.params.id);
+    if (!gig) {
+      return res.status(404).json({
+        success: false,
+        message: "Post not found",
+      });
+    }
+    if (gig.owner.toString() !== req.user._id.toString()) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+    await Gig.findByIdAndUpdate(req.params.id, req.body);
+    if (req.file) {
+      let g = await Gig.findById(req.params.id);
+      g.avatar.public_id = req.file.filename;
+      g.avatar.url = req.file.path;
+      await g.save();
+    }
+    const updated = await Gig.findById(req.params.id);
+    return res.send({ success: true, gig: updated });
+  } catch (error) {
+    return res.status(500).json({
       success: false,
       message: error.message,
     });

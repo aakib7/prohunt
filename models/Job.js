@@ -74,6 +74,10 @@ const jobSchema = mongoose.Schema({
     type: Array,
     required: [true, "Please Selete Category"],
   },
+  deliveredTime: {
+    type: String,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("Job", jobSchema);

@@ -50,6 +50,7 @@ exports.getJobs = async (req, res, next) => {
       .skip(page * limit)
       .limit(limit)
       .populate("owner");
+
     if (!jobs) {
       res.status(404).json({
         success: false,
@@ -84,7 +85,8 @@ exports.createJob = async (req, res, next) => {
       !req.body.title &&
       !req.body.price &&
       !req.body.category &&
-      !req.body.description
+      !req.body.description &&
+      !req.body.deliveredTime
     ) {
       return res.status(400).json({
         success: false,
@@ -97,6 +99,7 @@ exports.createJob = async (req, res, next) => {
       description: req.body.description,
       price: req.body.price,
       category: req.body.category,
+      deliveredTime: req.body.deliveredTime,
 
       image: {
         public_id: "req.body.image",
@@ -125,7 +128,7 @@ exports.createJob = async (req, res, next) => {
 
 exports.singleJob = async (req, res, next) => {
   try {
-    const job = await Job.findById(req.params.id);
+    const job = await Job.findById(req.params.id).populate("owner");
     if (!job) {
       return res.status(404).json({
         success: false,
@@ -229,5 +232,62 @@ exports.createReview = async (req, res, next) => {
     res.status(201).json({ success: true, message: "Review added" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.updateJob = async (req, res) => {
+  try {
+    console.log("re");
+    if (Object.keys(req.body).length === 0) {
+      return res.send({ success: false, message: "Enter Somthing" });
+    }
+    const job = await Job.findById(req.params.id);
+    if (!job) {
+      return res.status(404).json({
+        success: false,
+        message: "Job not found",
+      });
+    }
+    if (job.owner.toString() !== req.user._id.toString()) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+    await Job.findByIdAndUpdate(req.params.id, req.body);
+    if (req.file) {
+      let g = await Job.findById(req.params.id);
+      g.avatar.public_id = req.file.filename;
+      g.avatar.url = req.file.path;
+      await p.save();
+    }
+    const updated = await Job.findById(req.params.id);
+    return res.send({ success: true, gig: updated });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.allJob = async (req, res, next) => {
+  try {
+    const jobs = await Job.find({}).populate("owner");
+    if (!jobs) {
+      return res.status(400).json({
+        success: false,
+        message: "No Jobs",
+      });
+    }
+    return res.status(200).json({
+      success: false,
+      jobs,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };

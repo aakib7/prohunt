@@ -64,6 +64,18 @@ const userSchema = mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  skills: {
+    type: Array,
+    required: [true, "Please Selete Category"],
+  },
+  enterDetails: {
+    type: Boolean,
+    default: false,
+  },
+  language: {
+    type: String,
+    default: "English",
+  },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
 });

@@ -6,6 +6,8 @@ const crypto = require("crypto");
 const config = require("config");
 const ErrorHandler = require("../utils/errorHandler");
 const sendEmail = require("../middlewares/sendEmail");
+const Gig = require("../models/Gig");
+const Job = require("../models/Job");
 
 exports.register = async (req, res, next) => {
   // console.log(req.body);
@@ -38,7 +40,11 @@ exports.register = async (req, res, next) => {
         lastName,
         country,
         role,
-        avatar: { public_id: "sample_id", url: "sample_url" },
+        avatar: {
+          public_id: "Avatar",
+          url: "public/images/uploaded/users/profile.jpeg",
+        },
+        about: "nothing",
       });
       // user will automatacally login after registration
       // console.log(user);
@@ -228,9 +234,11 @@ exports.myProfile = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    if (!req.body) {
+    console.log("rm ");
+    if (Object.keys(req.body).length === 0 && !req.file) {
       return res.send({ success: false, message: "Enter Somthing" });
     }
+    console.log("file");
     await User.findByIdAndUpdate(req.user._id, req.body);
     if (req.file) {
       let u = await User.findById(req.user._id);
@@ -359,5 +367,124 @@ exports.setNewPassword = async (req, res, next) => {
       .json({ success: true, message: "Password reset successfully" });
   } catch (error) {
     res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+// get user gigs
+exports.getMygigs = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (user.role !== "freelancer") {
+      return res.status(401).json({
+        success: false,
+        message: "Not Allowed",
+      });
+    }
+
+    const gigs = [];
+
+    for (let i = 0; i < user.gigs.length; i++) {
+      const gig = await Gig.findById(user.gigs[i]);
+      gigs.push(gig);
+    }
+
+    return res.status(200).json({
+      success: true,
+      gigs,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+exports.getMyJobs = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (user.role !== "client") {
+      return res.status(401).json({
+        success: false,
+        message: "Not Allowed",
+      });
+    }
+
+    const jobs = [];
+
+    for (let i = 0; i < user.jobs.length; i++) {
+      const job = await Job.findById(user.jobs[i]);
+      jobs.push(job);
+    }
+
+    return res.status(200).json({
+      success: true,
+      jobs,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+exports.getAllFreelancer = async (req, res, next) => {
+  try {
+    const freelancer = await User.find({ role: "freelancer" });
+    if (!freelancer) {
+      return res.status(404).json({
+        success: false,
+        message: "No Freelancer Yet",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      freelancer,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+exports.getAllClients = async (req, res, next) => {
+  try {
+    const freelancer = await User.find({ role: "client" });
+    if (!freelancer) {
+      return res.status(404).json({
+        success: false,
+        message: "No Freelancer Yet",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      freelancer,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.getUser = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "User Not Found",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };

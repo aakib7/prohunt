@@ -74,6 +74,10 @@ const gigSchema = mongoose.Schema({
     required: true,
     default: 0,
   },
+  deliveredTime: {
+    type: "string",
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("Gig", gigSchema);
