@@ -1,6 +1,6 @@
 const User = require("../models/User");
 const Gig = require("../models/Gig");
-const ObjectId = require("mongodb").ObjectId;
+const Category = require("../models/Category");
 
 // @desc    Fetch all gigs
 // @route   GET /gigs
@@ -9,18 +9,17 @@ exports.getGigs = async (req, res) => {
   try {
     // filters and search
     const page = Number(req.query.page) - 1 || 0;
-    const limit = Number(req.query.limit) || 5;
+    const limit = Number(req.query.limit) || 10;
     const search = req.query.search || "";
     let sort = req.query.sort || "price";
     let category = req.query.category || "All";
     let priceRange = { $gte: "0" };
 
-    let categories = [
-      "Web Development",
-      "Content Writing",
-      "Mobile App Development",
-      "Game Development",
-    ];
+    const categoriesObj = await Category.find({});
+    let categories = [];
+    categoriesObj.map((cat) => {
+      categories.push(cat.name);
+    });
 
     category === "All"
       ? (category = [...categories])
@@ -54,9 +53,12 @@ exports.getGigs = async (req, res) => {
       .skip(page * limit)
       .limit(limit)
       .populate("owner");
+    const gigCount = await Gig.count();
+
     return res.status(201).json({
       success: true,
       Gigs: Gigs,
+      total: gigCount,
     });
   } catch (error) {
     res.status(500).json({

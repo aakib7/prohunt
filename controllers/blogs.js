@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const BlogPost = require("../models/BlogPost");
+const Category = require("../models/Category");
 
 // @desc    Create New Post
 // @route   Post /blog
@@ -129,14 +130,12 @@ exports.blogs = async (req, res, next) => {
     const search = req.query.search || "";
     let sort = req.query.sort || "price";
     let category = req.query.category || "All";
-    let priceRange = { $gte: "0" };
 
-    let categories = [
-      "Web Development",
-      "Content Writing",
-      "Mobile App Development",
-      "Game Development",
-    ];
+    const categoriesObj = await Category.find({});
+    let categories = [];
+    categoriesObj.map((cat) => {
+      categories.push(cat.name);
+    });
 
     category === "All"
       ? (category = [...categories])
@@ -164,7 +163,8 @@ exports.blogs = async (req, res, next) => {
       .skip(page * limit)
       .limit(limit)
       .populate("owner");
-    res.status(200).json({ success: true, post: blog });
+    const blogCount = await BlogPost.count();
+    res.status(200).json({ success: true, post: blog, total: blogCount });
   } catch (error) {
     res.status(500).json({
       success: false,

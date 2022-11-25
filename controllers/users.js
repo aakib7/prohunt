@@ -8,6 +8,7 @@ const ErrorHandler = require("../utils/errorHandler");
 const sendEmail = require("../middlewares/sendEmail");
 const Gig = require("../models/Gig");
 const Job = require("../models/Job");
+const BlogPost = require("../models/BlogPost");
 
 exports.register = async (req, res, next) => {
   // console.log(req.body);
@@ -449,8 +450,8 @@ exports.getAllFreelancer = async (req, res, next) => {
 };
 exports.getAllClients = async (req, res, next) => {
   try {
-    const freelancer = await User.find({ role: "client" });
-    if (!freelancer) {
+    const client = await User.find({ role: "client" });
+    if (!client) {
       return res.status(404).json({
         success: false,
         message: "No Freelancer Yet",
@@ -458,7 +459,29 @@ exports.getAllClients = async (req, res, next) => {
     }
     return res.status(200).json({
       success: true,
-      freelancer,
+      client,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+exports.getMyBlogs = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    const blogs = [];
+
+    for (let i = 0; i < user.blogs.length; i++) {
+      const blog = await BlogPost.findById(user.blogs[i]);
+      blogs.push(blog);
+    }
+
+    return res.status(200).json({
+      success: true,
+      blogs,
     });
   } catch (error) {
     res.status(500).json({

@@ -8,11 +8,9 @@ const bidSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
-  createdAt: {
-    type: Date,
-    default: Date.now(),
-  },
-  status: Boolean,
+  createdAt: new Date(),
+  status: { Boolean, default: "Pending" },
+  timestamps: true,
 });
 
 module.exports = mongoose.model("Bid", bidSchema);

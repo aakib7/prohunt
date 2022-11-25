@@ -15,6 +15,7 @@ const {
   getMyJobs,
   getAllFreelancer,
   getAllClients,
+  getMyBlogs,
   getUser,
 } = require("../../controllers/users");
 const { isAuthenticated } = require("../../middlewares/auth");
@@ -38,6 +39,7 @@ router.post("/login", login);
 router.get("/logout", logout);
 router.get("/gigs", isAuthenticated, getMygigs);
 router.get("/jobs", isAuthenticated, getMyJobs);
+router.get("/blogs", isAuthenticated, getMyBlogs);
 router.get("/me", isAuthenticated, myProfile);
 router.get("/:id/verify/:token/", varifyAccount);
 router.get("/freelancers", getAllFreelancer);

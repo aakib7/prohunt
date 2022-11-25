@@ -45,11 +45,20 @@ exports.createSubCategory = async (req, res, next) => {
 };
 exports.getCategories = async (req, res, next) => {
   try {
-    const categories = await Category.find({}).populate("subCategories");
-    // console.log(categories[0].name);
+    const search = req.query.search || "";
+    const page = Number(req.query.page) - 1 || 0;
+    const limit = Number(req.query.limit) || 10;
+    const categories = await Category.find({
+      name: { $regex: search, $options: "i" },
+    })
+      .skip(page * limit)
+      .limit(limit)
+      .populate("subCategories");
+    const Count = await Category.count();
     return res.status(200).json({
       success: true,
       categories,
+      total: Count,
     });
   } catch (error) {
     res.status(500).json({

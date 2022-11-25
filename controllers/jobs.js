@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const Job = require("../models/Job");
+const Category = require("../models/Category");
 
 // @desc    Fetch all Jobs
 // @route   GET /jobs
@@ -9,18 +10,17 @@ exports.getJobs = async (req, res, next) => {
   try {
     // filters and search
     const page = Number(req.query.page) - 1 || 0;
-    const limit = Number(req.query.limit) || 5;
+    const limit = Number(req.query.limit) || 10;
     const search = req.query.search || "";
     let sort = req.query.sort || "price";
     let category = req.query.category || "All";
     let priceRange = { $gte: "0" };
 
-    let categories = [
-      "Web Development",
-      "Content Writing",
-      "Mobile App Development",
-      "Game Development",
-    ];
+    const categoriesObj = await Category.find({});
+    let categories = [];
+    categoriesObj.map((cat) => {
+      categories.push(cat.name);
+    });
 
     category === "All"
       ? (category = [...categories])
@@ -50,6 +50,7 @@ exports.getJobs = async (req, res, next) => {
       .skip(page * limit)
       .limit(limit)
       .populate("owner");
+    const jobCount = await Job.count();
 
     if (!jobs) {
       res.status(404).json({
@@ -60,6 +61,7 @@ exports.getJobs = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       Jobs: jobs,
+      total: jobCount,
     });
   } catch (error) {
     res.status(500).json({
