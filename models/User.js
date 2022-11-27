@@ -47,6 +47,18 @@ const userSchema = mongoose.Schema({
       ref: "BlogPost",
     },
   ],
+  completedProject: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      require: true,
+    },
+  ],
+  onGoingProject: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      require: true,
+    },
+  ],
   likes: {
     blog: [],
     gigs: [],

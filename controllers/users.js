@@ -235,11 +235,9 @@ exports.myProfile = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    console.log("rm ");
     if (Object.keys(req.body).length === 0 && !req.file) {
       return res.send({ success: false, message: "Enter Somthing" });
     }
-    console.log("file");
     await User.findByIdAndUpdate(req.user._id, req.body);
     if (req.file) {
       let u = await User.findById(req.user._id);
@@ -430,16 +428,29 @@ exports.getMyJobs = async (req, res, next) => {
 };
 exports.getAllFreelancer = async (req, res, next) => {
   try {
-    const freelancer = await User.find({ role: "freelancer" });
+    const page = Number(req.query.page) - 1 || 0;
+    const limit = Number(req.query.limit) || 10;
+    const search = req.query.search || "";
+    const freelancer = await User.find({
+      $or: [
+        { firstName: { $regex: search, $options: "i" } },
+        { lastName: { $regex: search, $options: "i" } },
+      ],
+      role: "freelancer",
+    })
+      .skip(page * limit)
+      .limit(limit);
     if (!freelancer) {
       return res.status(404).json({
         success: false,
         message: "No Freelancer Yet",
       });
     }
+    const freelancerCount = await User.find({ role: "freelancer" }).count();
     return res.status(200).json({
       success: true,
       freelancer,
+      total: freelancerCount,
     });
   } catch (error) {
     res.status(500).json({

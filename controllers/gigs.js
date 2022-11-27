@@ -70,6 +70,12 @@ exports.getGigs = async (req, res) => {
 
 exports.createGig = async (req, res) => {
   try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Attach picture",
+      });
+    }
     const gig = await Gig.find({ owner: req.user._id });
     if (gig.length == 5) {
       return res.status(400).json({
@@ -77,23 +83,29 @@ exports.createGig = async (req, res) => {
         message: "You already have 5 gig. only 5 allowed at a time",
       });
     }
-    if (!req.body.title && !req.body.price && !req.body.category) {
+    if (!req.body.gigTitle && !req.body.gigPrice && !req.body.subCategories) {
       return res.status(400).json({
         success: false,
         message: "title, price and category is mendatory",
       });
     }
+    if (Number(req.body.gigPrice) <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Gig Price Must be Greater than 0",
+      });
+    }
+    const categories = req.body.subCategories.split(",");
 
     const newGigData = {
-      title: req.body.title,
+      title: req.body.gigTitle,
       description: req.body.description,
-      price: req.body.price,
-      category: req.body.category,
-      deliveredTime: req.body.deliveredTime,
-
+      price: req.body.gigPrice,
+      category: categories,
+      deliveredTime: req.body.Deliver,
       image: {
-        public_id: "req.body.image",
-        url: "req.body.url",
+        public_id: req.file.filename,
+        url: req.file.path,
       },
       owner: req.user._id,
     };
@@ -141,7 +153,6 @@ exports.totalGigs = async (req, res) => {
 // @access  Private
 exports.deleteGig = async (req, res) => {
   try {
-    console.log("Delete Gig");
     const gig = await Gig.findById(req.params.id);
     if (!gig) return res.status(404).send("Gig Not Found");
 
@@ -274,15 +285,20 @@ exports.likeUnlikeGig = async function (req, res, next) {
 
 exports.updateGig = async (req, res) => {
   try {
-    console.log(req.body);
     if (Object.keys(req.body).length === 0) {
       return res.send({ success: false, message: "Enter Somthing" });
+    }
+    if (Number(req.gigPrice) <= 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Price Must be greater than 0",
+      });
     }
     const gig = await Gig.findById(req.params.id);
     if (!gig) {
       return res.status(404).json({
         success: false,
-        message: "Post not found",
+        message: "Gig not found",
       });
     }
     if (gig.owner.toString() !== req.user._id.toString()) {
@@ -291,11 +307,19 @@ exports.updateGig = async (req, res) => {
         message: "Unauthorized",
       });
     }
-    await Gig.findByIdAndUpdate(req.params.id, req.body);
+    const categories = req.body.subCategories.split(",");
+    const updatedGigData = {
+      title: req.body.gigTitle,
+      description: req.body.description,
+      price: req.body.gigPrice,
+      category: categories,
+      deliveredTime: req.body.Deliver,
+    };
+    await Gig.findByIdAndUpdate(req.params.id, updatedGigData);
     if (req.file) {
       let g = await Gig.findById(req.params.id);
-      g.avatar.public_id = req.file.filename;
-      g.avatar.url = req.file.path;
+      g.image.public_id = req.file.filename;
+      g.image.url = req.file.path;
       await g.save();
     }
     const updated = await Gig.findById(req.params.id);

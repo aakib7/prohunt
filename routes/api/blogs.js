@@ -11,9 +11,20 @@ const {
 } = require("../../controllers/blogs");
 const { isAuthenticated } = require("../../middlewares/auth");
 
-router.post("/create", isAuthenticated, createPost);
+const multer = require("multer");
+const storage = multer.diskStorage({
+  destination: (req, file, callBack) => {
+    callBack(null, "public/images/uploaded/blogs");
+  },
+  filename: (req, file, callBack) => {
+    callBack(null, `${Date.now() + file.originalname.split(" ").join("-")}`);
+  },
+});
+let upload = multer({ storage });
+
+router.post("/create", isAuthenticated, upload.single("blog"), createPost);
 router.delete("/delete/:id", isAuthenticated, deleteBlog);
-router.put("/update/:id", isAuthenticated, updateBlog);
+router.put("/update/:id", isAuthenticated, upload.single("blog"), updateBlog);
 router.get("/", blogs);
 router.get("/:id", singleBlog);
 router.post("/:id/reviews", isAuthenticated, createReview);

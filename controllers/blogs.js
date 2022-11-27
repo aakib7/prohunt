@@ -8,24 +8,31 @@ const Category = require("../models/Category");
 
 exports.createPost = async (req, res, next) => {
   try {
-    if (!req.body.title && !req.body.description && !req.body.category) {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Attach picture",
+      });
+    }
+    if (Object.keys(req.body).length === 0) {
       return res.status(400).json({
         success: false,
         message: "title, description and category is mendatory",
       });
     }
-    const newBlog = {
-      title: req.body.title,
+    const categories = req.body.subCategories.split(",");
+
+    const newBlogData = {
+      title: req.body.Title,
       description: req.body.description,
-      category: req.body.category,
-      image: {
-        url: "req.body.url",
-      },
+      category: categories,
       owner: req.user._id,
+      image: {
+        url: req.file.path,
+      },
     };
-    const blog = await BlogPost.create(newBlog);
+    const blog = await BlogPost.create(newBlogData);
     const user = await User.findById(req.user._id);
-    console.log(req.user);
     user.blogs.push(blog._id);
     await user.save();
     return res.status(201).json({ success: true, blog });
@@ -76,6 +83,9 @@ exports.deleteBlog = async (req, res, next) => {
 
 exports.updateBlog = async (req, res, next) => {
   try {
+    if (Object.keys(req.body).length === 0) {
+      return res.send({ success: false, message: "Enter Somthing" });
+    }
     const blog = await BlogPost.findById(req.params.id);
     if (!blog) return res.status(404).send("Post Not Found");
 
@@ -85,15 +95,25 @@ exports.updateBlog = async (req, res, next) => {
         message: "Unauthorized",
       });
     }
+    const categories = req.body.subCategories.split(",");
+    const newBlogData = {
+      title: req.body.Title,
+      description: req.body.description,
+      category: categories,
+      owner: req.user._id,
+    };
 
     const updatedPost = await BlogPost.findByIdAndUpdate(
       req.params.id,
-      {
-        $set: req.body,
-      },
-      { new: true }
+      newBlogData
     );
-    return res.status(200).json({ success: true, updatedPost });
+    if (req.file) {
+      let blog = await BlogPost.findById(req.params.id);
+      blog.image.url = req.file.path;
+      await blog.save();
+    }
+    const updated = await BlogPost.findById(req.params.id);
+    return res.status(200).json({ success: true, updated });
   } catch (error) {
     res.status(500).json({
       success: false,
