@@ -4,6 +4,10 @@ const bidSchema = mongoose.Schema({
     type: String,
     required: [true, "Please enter description"],
   },
+  budget: {
+    Number,
+    required: [true, "Please enter Budget"],
+  },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

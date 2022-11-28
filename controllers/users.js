@@ -65,8 +65,8 @@ exports.register = async (req, res, next) => {
       const url = `http://localhost:3000/user/${user.id}/verify/${token.token}`;
       let message = `<h2>Please Click The Link To Varify Your Account At ProHunt</h2>
       <a href=${url}>${url}</a>`;
-      console.log(url);
-      await sendEmail(user.email, "Account Verify Email", message);
+
+      // await sendEmail(user.email, "Account Verify Email", message);
       return res.status(201).send({
         success: true,
         message: "An Email sent to your account please verify",

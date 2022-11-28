@@ -76,6 +76,12 @@ exports.getJobs = async (req, res, next) => {
 // @access  private
 exports.createJob = async (req, res, next) => {
   try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Attach picture",
+      });
+    }
     const job = await Job.find({ owner: req.user._id });
     if (job.length == 5) {
       return res.status(400).json({
@@ -83,29 +89,37 @@ exports.createJob = async (req, res, next) => {
         message: "You already have 5 Job. Only 5 allowed at a time",
       });
     }
+
     if (
-      !req.body.title &&
-      !req.body.price &&
-      !req.body.category &&
+      !req.body.jobTitle &&
+      !req.body.jobBudget &&
+      !req.body.subCategories &&
       !req.body.description &&
-      !req.body.deliveredTime
+      !req.body.description
     ) {
       return res.status(400).json({
         success: false,
         message: "title, price and category is mendatory",
       });
     }
+    if (Number(req.body.jobBudget) <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Gig Price Must be Greater than 0",
+      });
+    }
+    const categories = req.body.subCategories.split(",");
 
     const newJobData = {
-      title: req.body.title,
+      title: req.body.jobTitle,
       description: req.body.description,
-      price: req.body.price,
-      category: req.body.category,
-      deliveredTime: req.body.deliveredTime,
+      price: req.body.jobBudget,
+      category: categories,
+      deliveredTime: req.body.jobDelvery,
 
       image: {
-        public_id: "req.body.image",
-        url: "req.body.url",
+        public_id: req.file.filename,
+        url: req.file.path,
       },
       owner: req.user._id,
     };
@@ -130,7 +144,7 @@ exports.createJob = async (req, res, next) => {
 
 exports.singleJob = async (req, res, next) => {
   try {
-    const job = await Job.findById(req.params.id).populate("owner");
+    const job = await Job.findById(req.params.id).populate("owner bids.owner");
     if (!job) {
       return res.status(404).json({
         success: false,

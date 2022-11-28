@@ -47,18 +47,20 @@ const userSchema = mongoose.Schema({
       ref: "BlogPost",
     },
   ],
-  completedProject: [
+  bids: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      require: true,
+      ref: "Bid",
     },
   ],
-  onGoingProject: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      require: true,
-    },
-  ],
+  completedProject: {
+    type: Number,
+    default: 0,
+  },
+  onGoingProject: {
+    type: Number,
+    default: 0,
+  },
   likes: {
     blog: [],
     gigs: [],
@@ -84,6 +86,12 @@ const userSchema = mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  orders: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Order",
+    },
+  ],
   language: {
     type: String,
     default: "English",

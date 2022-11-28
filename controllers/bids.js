@@ -1,6 +1,5 @@
 const User = require("../models/User");
 const Job = require("../models/Job");
-
 // @desc    Bid on a Job
 // @route   POST /bid/:id
 // @access  Private
@@ -9,10 +8,17 @@ exports.createBid = async (req, res, next) => {
   try {
     let alreadyBid = false;
     const description = req.body.description;
-    if (!description) {
+    const budget = req.body.budget;
+
+    if (!description || !budget) {
       return res
         .status(400)
         .json({ success: false, message: "Description is reqruired" });
+    }
+    if (req.user.role !== "freelancer") {
+      return res
+        .status(400)
+        .json({ success: false, message: "Only freelancer can Bid" });
     }
     const job = await Job.findById(req.params.id);
     if (!Job) {
@@ -35,10 +41,15 @@ exports.createBid = async (req, res, next) => {
     }
     const bid = {
       description,
+      budget: req.body.budget,
       owner: req.user._id,
     };
+
     job.bids.push(bid);
     await job.save();
+    const user = await User.findById(req.user._id);
+    user.bids.push(job._id);
+    await user.save();
     res
       .status(201)
       .json({ success: true, message: "Your bid Added successfully!!" });

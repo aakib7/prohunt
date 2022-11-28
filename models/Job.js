@@ -54,6 +54,10 @@ const jobSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
       },
+      budget: {
+        type: Number,
+        required: true,
+      },
       description: {
         type: String,
         required: true,
