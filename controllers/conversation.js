@@ -8,14 +8,26 @@ exports.createConversation = async (req, res, next) => {
         message: "enter both sender and receiver ids",
       });
     }
-    const newConversation = {
-      members: [req.body.senderId, req.body.receiverId],
-    };
-    const conversation = await Conversation.create(newConversation);
-    return res.status(200).json({
-      success: true,
-      conversation,
+    const existingConversation = await Conversation.findOne({
+      members: { $all: [req.body.senderId, req.body.receiverId] },
     });
+
+    if (existingConversation) {
+      return res.status(200).json({
+        success: true,
+        conversation: existingConversation,
+      });
+    }
+    if (!existingConversation) {
+      const newConversation = {
+        members: [req.body.senderId, req.body.receiverId],
+      };
+      const conversation = await Conversation.create(newConversation);
+      return res.status(200).json({
+        success: true,
+        conversation,
+      });
+    }
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -44,7 +56,7 @@ exports.getConversation = async (req, res, next) => {
     }
     return res.status(200).json({
       success: true,
-      conversation,
+      conversation: conversation.reverse(),
     });
   } catch (error) {
     res.status(500).json({

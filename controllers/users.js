@@ -522,3 +522,31 @@ exports.getUser = async (req, res, next) => {
     });
   }
 };
+
+exports.getUsers = async (req, res, next) => {
+  try {
+    const limit = Number(req.query.limit) || 8;
+    const search = req.query.search || "";
+    const users = await User.find({
+      $or: [
+        { firstName: { $regex: search, $options: "i" } },
+        { lastName: { $regex: search, $options: "i" } },
+      ],
+    }).limit(limit);
+    if (!users) {
+      return res.status(404).json({
+        success: false,
+        message: "No User",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      users,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

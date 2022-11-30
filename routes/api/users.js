@@ -17,6 +17,7 @@ const {
   getAllClients,
   getMyBlogs,
   getUser,
+  getUsers,
 } = require("../../controllers/users");
 const { isAuthenticated } = require("../../middlewares/auth");
 const { uploadProfilePicture } = require("../../middlewares/uploadFiles");
@@ -45,6 +46,7 @@ router.get("/:id/verify/:token/", varifyAccount);
 router.get("/freelancers", getAllFreelancer);
 router.get("/clients", getAllClients);
 router.get("/user/:id", getUser);
+router.get("/", getUsers);
 router.post("/forget-password", forgetPassword);
 router.post("/password-reset/:id/:token", setNewPassword);
 router.post("/changepassword", isAuthenticated, changePassword);
