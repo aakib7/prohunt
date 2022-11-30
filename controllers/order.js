@@ -60,14 +60,47 @@ exports.getOrders = async (req, res, next) => {
     });
   }
 };
-exports.getOrder = async (req, res, next) => {
+// order of the client who place the order.
+
+exports.getOrderOfOwner = async (req, res, next) => {
   try {
-    const orders = await Order.findById(req.params.id).populate(
-      "owner orderTo"
-    );
+    if (!req.body) {
+      return res.status(400).json({
+        success: false,
+        message: "Enter Status ",
+      });
+    }
+    const orders = await Order.find({
+      $and: [{ owner: req.user._id }, { isCompleted: req.body.isCompleted }],
+    }).populate("orderTo");
     return res.status(200).json({
       success: true,
       orders,
+      totalOrders: orders.length,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+exports.getOrderOfFreelancer = async (req, res, next) => {
+  try {
+    console.log(req.body);
+    if (!req.body) {
+      return res.status(400).json({
+        success: false,
+        message: "Enter Status ",
+      });
+    }
+    const orders = await Order.find({
+      $and: [{ orderTo: req.body.userId }, { isCompleted: false }],
+    }).populate("owner");
+    return res.status(200).json({
+      success: true,
+      orders,
+      totalOrders: orders.length,
     });
   } catch (error) {
     res.status(500).json({
