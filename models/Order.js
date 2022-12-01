@@ -33,7 +33,23 @@ const orderSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    date: { type: Date, default: Date.now },
+    todo: [
+      {
+        summery: { type: String, required: true },
+        milstoneNumber: { type: Number, required: true },
+        milstoneWeightage: { type: Number, required: true },
+        status: {
+          type: Boolean,
+          required: true,
+        },
+        dueDate: { type: String, required: true },
+      },
+      {
+        timestamps: true,
+      },
+    ],
+    progress: { type: Number, default: 0 },
+    orderDate: { type: Date, default: new Date() },
   },
   { timestamps: true }
 );
