@@ -5,7 +5,6 @@ const Order = require("../models/Order");
 
 exports.createOrder = async (req, res, next) => {
   try {
-    console.log("Fff");
     if (Object.keys(req.body).length === 0) {
       return res.status(400).json({
         success: false,
@@ -23,17 +22,20 @@ exports.createOrder = async (req, res, next) => {
     };
     const order = await Order.create(newOrderData);
 
+    // customer order handling
     const orderFromUser = await User.findByIdAndUpdate(req.user._id, {
       $inc: { onGoingProject: 1 },
     });
     orderFromUser.orders.push(order._id);
     await orderFromUser.save();
 
+    // freelancer order handling
     const orderToUser = await User.findByIdAndUpdate(req.body.id, {
       $inc: { onGoingProject: 1 },
     });
     orderToUser.orders.push(order._id);
     await orderToUser.save();
+
     return res.status(200).json({
       success: true,
       order,
@@ -87,6 +89,8 @@ exports.getOrderOfOwner = async (req, res, next) => {
     });
   }
 };
+
+// get freelancer incomplete orders
 exports.getOrderOfFreelancer = async (req, res, next) => {
   try {
     console.log(req.body);
@@ -121,7 +125,7 @@ exports.manageProject = async (req, res, next) => {
         message: "Unauthorized",
       });
     }
-    console.log(req.body);
+    // console.log(req.body);
     const order = await Order.findById(req.params.id);
     if (!order) {
       return res
@@ -158,6 +162,7 @@ exports.manageProject = async (req, res, next) => {
     });
   }
 };
+
 exports.milstoneStatusChange = async (req, res, next) => {
   try {
     if (req.user.role !== "freelancer") {
@@ -197,6 +202,7 @@ exports.milstoneStatusChange = async (req, res, next) => {
     });
   }
 };
+
 exports.getSingleOrder = async (req, res, next) => {
   try {
     const order = await Order.findById(req.params.id);
