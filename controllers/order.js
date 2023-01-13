@@ -226,3 +226,26 @@ exports.getSingleOrder = async (req, res, next) => {
     });
   }
 };
+exports.completeOrder = async (req, res, next) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (order.orderTo.toString() !== req.user._id.toString()) {
+      return res.json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+    await Order.findByIdAndUpdate(req.params.id, {
+      isCompleted: true,
+    });
+    return res.status(200).json({
+      success: true,
+      message: "complete order success",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

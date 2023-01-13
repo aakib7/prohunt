@@ -8,6 +8,7 @@ const {
   manageProject,
   milstoneStatusChange,
   getSingleOrder,
+  completeOrder,
 } = require("../../controllers/order");
 const { isAuthenticated } = require("../../middlewares/auth");
 
@@ -18,5 +19,6 @@ router.post("/client/orders", isAuthenticated, getOrderOfOwner);
 router.post("/freelancer", getOrderOfFreelancer);
 router.post("/manage/:id", isAuthenticated, manageProject);
 router.post("/changeStatus/:id", isAuthenticated, milstoneStatusChange);
+router.get("/complete/:id", isAuthenticated, completeOrder);
 
 module.exports = router;

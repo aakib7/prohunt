@@ -36,6 +36,7 @@ app.use(cookieParser());
 const corsConfig = {
   credentials: true,
   origin: true,
+  methods: ["GET", "POST"],
 };
 app.use(cors(corsConfig));
 
