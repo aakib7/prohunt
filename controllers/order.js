@@ -66,7 +66,7 @@ exports.getOrders = async (req, res, next) => {
 
 exports.getOrderOfOwner = async (req, res, next) => {
   try {
-    console.log("gd");
+    // console.log("gd");
     if (!req.body) {
       return res.status(400).json({
         success: false,
@@ -90,10 +90,10 @@ exports.getOrderOfOwner = async (req, res, next) => {
   }
 };
 
-// get freelancer incomplete orders
+// get freelancer incomplete orders and complete
 exports.getOrderOfFreelancer = async (req, res, next) => {
   try {
-    console.log(req.body);
+    // console.log(req.body);
     if (!req.body) {
       return res.status(400).json({
         success: false,
@@ -101,7 +101,10 @@ exports.getOrderOfFreelancer = async (req, res, next) => {
       });
     }
     const orders = await Order.find({
-      $and: [{ orderTo: req.body.userId }, { isCompleted: false }],
+      $and: [
+        { orderTo: req.body.userId },
+        { isCompleted: req.body.isCompleted },
+      ],
     }).populate("owner");
     return res.status(200).json({
       success: true,
