@@ -21,6 +21,7 @@ var orderRouter = require("./routes/api/order");
 var conversationRouter = require("./routes/api/conversation");
 var messageRouter = require("./routes/api/message");
 var reportRouter = require("./routes/api/report");
+var portfolioRouter = require("./routes/api/portfolio");
 
 var app = express();
 
@@ -62,6 +63,7 @@ app.use("/order", orderRouter);
 app.use("/conversation", conversationRouter);
 app.use("/message", messageRouter);
 app.use("/report", reportRouter);
+app.use("/portfolio", portfolioRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

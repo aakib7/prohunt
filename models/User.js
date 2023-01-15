@@ -36,6 +36,12 @@ const userSchema = mongoose.Schema(
         ref: "Gig",
       },
     ],
+    portfolio: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Portfolio",
+      },
+    ],
     jobs: [
       {
         type: mongoose.Schema.Types.ObjectId,
