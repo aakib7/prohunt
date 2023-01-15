@@ -20,6 +20,7 @@ var categoryRouter = require("./routes/api/category");
 var orderRouter = require("./routes/api/order");
 var conversationRouter = require("./routes/api/conversation");
 var messageRouter = require("./routes/api/message");
+var reportRouter = require("./routes/api/report");
 
 var app = express();
 
@@ -36,7 +37,7 @@ app.use(cookieParser());
 const corsConfig = {
   credentials: true,
   origin: true,
-  methods: ["GET", "POST"],
+  methods: ["GET", "POST", "DELETE", "PUT"],
 };
 app.use(cors(corsConfig));
 
@@ -60,6 +61,7 @@ app.use("/category", categoryRouter);
 app.use("/order", orderRouter);
 app.use("/conversation", conversationRouter);
 app.use("/message", messageRouter);
+app.use("/report", reportRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

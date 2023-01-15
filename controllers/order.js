@@ -93,11 +93,10 @@ exports.getOrderOfOwner = async (req, res, next) => {
 // get freelancer incomplete orders and complete
 exports.getOrderOfFreelancer = async (req, res, next) => {
   try {
-    // console.log(req.body);
     if (!req.body) {
       return res.status(400).json({
         success: false,
-        message: "Enter Status ",
+        message: "Enter Status",
       });
     }
     const orders = await Order.find({
@@ -238,9 +237,42 @@ exports.completeOrder = async (req, res, next) => {
     await Order.findByIdAndUpdate(req.params.id, {
       isCompleted: true,
     });
+    // freelancer order handling
+    await User.findByIdAndUpdate(req.user._id, {
+      $inc: { onGoingProject: -1 },
+    });
+    await User.findByIdAndUpdate(req.user._id, {
+      $inc: { completedProject: 1 },
+    });
+    //customer order completion handling
+    await User.findByIdAndUpdate(order.owner, {
+      $inc: { completedProject: 1 },
+    });
+    await User.findByIdAndUpdate(order.owner, {
+      $inc: { onGoingProject: -1 },
+    });
+
     return res.status(200).json({
       success: true,
       message: "complete order success",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+// owner
+exports.getFreelancerTeamOrder = async (req, res, next) => {
+  try {
+    const orders = await Order.find({ owner: req.user._id }).populate(
+      "orderTo"
+    );
+    return res.status(200).json({
+      success: true,
+      orders,
+      totalOrders: orders.length,
     });
   } catch (error) {
     res.status(500).json({

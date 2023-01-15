@@ -9,11 +9,13 @@ const {
   milstoneStatusChange,
   getSingleOrder,
   completeOrder,
+  getFreelancerTeamOrder,
 } = require("../../controllers/order");
 const { isAuthenticated } = require("../../middlewares/auth");
 
 router.post("/", isAuthenticated, createOrder);
 router.get("/", getOrders);
+router.get("/teamOrder", isAuthenticated, getFreelancerTeamOrder);
 router.get("/:id", getSingleOrder);
 router.post("/client/orders", isAuthenticated, getOrderOfOwner);
 router.post("/freelancer", getOrderOfFreelancer);

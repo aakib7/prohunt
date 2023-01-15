@@ -66,7 +66,7 @@ exports.register = async (req, res, next) => {
       let message = `<h2>Please Click The Link To Varify Your Account At ProHunt</h2>
       <a href=${url}>${url}</a>`;
 
-      // await sendEmail(user.email, "Account Verify Email", message);
+      await sendEmail(user.email, "Account Verify Email", message);
       return res.status(201).send({
         success: true,
         message: "An Email sent to your account please verify",
@@ -80,7 +80,6 @@ exports.register = async (req, res, next) => {
     });
   }
 };
-
 // upload Profile Picture
 exports.uploadPicture = async (req, res, next) => {
   try {
@@ -101,9 +100,7 @@ exports.uploadPicture = async (req, res, next) => {
     });
   }
 };
-
 // login
-
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -158,9 +155,7 @@ exports.login = async (req, res) => {
     });
   }
 };
-
 // Logout
-
 exports.logout = async (req, res) => {
   try {
     return res
@@ -180,7 +175,6 @@ exports.logout = async (req, res) => {
     });
   }
 };
-
 exports.changePassword = async (req, res) => {
   try {
     let { oldPassword, newPassword } = req.body;
@@ -215,7 +209,6 @@ exports.changePassword = async (req, res) => {
     });
   }
 };
-
 // get current user profile me
 exports.myProfile = async (req, res) => {
   try {
@@ -232,7 +225,6 @@ exports.myProfile = async (req, res) => {
     });
   }
 };
-
 exports.updateUser = async (req, res) => {
   try {
     if (Object.keys(req.body).length === 0 && !req.file) {
@@ -254,7 +246,6 @@ exports.updateUser = async (req, res) => {
     });
   }
 };
-
 exports.varifyAccount = async (req, res, next) => {
   try {
     const user = await User.findOne({ _id: req.params.id });
@@ -278,9 +269,7 @@ exports.varifyAccount = async (req, res, next) => {
     res.status(500).send({ success: false, message: "Internal Server Error" });
   }
 };
-
 // forget password apis
-
 exports.forgetPassword = async (req, res, next) => {
   try {
     let user = await User.findOne({ email: req.body.email });
@@ -319,7 +308,6 @@ exports.forgetPassword = async (req, res, next) => {
     res.status(500).json({ seccess: false, message: "Internal Server Error" });
   }
 };
-
 // exports.varifyPasswordLink = async (req, res, next) => {
 //   try {
 //     const user = await User.findOne({ _id: req.params.id });
@@ -338,7 +326,6 @@ exports.forgetPassword = async (req, res, next) => {
 //     res.status(500).send({ message: "Internal Server Error" });
 //   }
 // };
-
 exports.setNewPassword = async (req, res, next) => {
   try {
     console.log("r");
@@ -368,7 +355,6 @@ exports.setNewPassword = async (req, res, next) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
-
 // get user gigs
 exports.getMygigs = async (req, res, next) => {
   try {
@@ -401,12 +387,12 @@ exports.getMygigs = async (req, res, next) => {
 exports.getMyJobs = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id);
-    if (user.role !== "client") {
-      return res.status(401).json({
-        success: false,
-        message: "Not Allowed",
-      });
-    }
+    // if (user.role !== "client") {
+    //   return res.status(401).json({
+    //     success: false,
+    //     message: "Not Allowed",
+    //   });
+    // }
 
     const jobs = [];
 
@@ -501,7 +487,6 @@ exports.getMyBlogs = async (req, res, next) => {
     });
   }
 };
-
 exports.getUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
@@ -522,7 +507,6 @@ exports.getUser = async (req, res, next) => {
     });
   }
 };
-
 exports.getUsers = async (req, res, next) => {
   try {
     const limit = Number(req.query.limit) || 8;
