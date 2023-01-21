@@ -15,6 +15,24 @@ const userSchema = mongoose.Schema(
       required: true,
       default: "freelancer",
     },
+    reviews: [
+      {
+        rating: { type: Number, required: true },
+      },
+      {
+        timestamps: true,
+      },
+    ],
+    rating: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+    numReviews: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
     email: {
       type: String,
       required: [true, "Please Enter a Name"],

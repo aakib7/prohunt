@@ -281,3 +281,34 @@ exports.getFreelancerTeamOrder = async (req, res, next) => {
     });
   }
 };
+// order Rating
+exports.rateOrder = async (req, res, next) => {
+  try {
+    let { rating } = req.body;
+    const order = await Order.findById(req.params.id);
+    order.rating = rating;
+    order.isRated = true;
+    await order.save();
+
+    const user = await User.findById(order.orderTo);
+
+    const review = {
+      rating: Number(rating),
+    };
+    user.reviews.push(review);
+    user.numReviews = user.reviews.length;
+    user.rating =
+      user.reviews.reduce((acc, item) => item.rating + acc, 0) /
+      user.reviews.length;
+    await user.save();
+    return res.status(200).json({
+      success: true,
+      messsage: "Review Added",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

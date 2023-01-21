@@ -5,6 +5,7 @@ const {
   getSinglePortfolio,
   getPortfolio,
   deletePortfolio,
+  getPortfolioUser,
 } = require("../../controllers/portfolio");
 const { isAuthenticated } = require("../../middlewares/auth");
 
@@ -25,7 +26,8 @@ router.post(
   upload.array("portfolio", 5),
   createPortfolio
 );
-router.get("/:id", isAuthenticated, getSinglePortfolio);
+router.get("/:id", getSinglePortfolio);
+router.get("/user/:id", getPortfolioUser);
 router.get("/", isAuthenticated, getPortfolio);
 router.delete("/:id", isAuthenticated, deletePortfolio);
 

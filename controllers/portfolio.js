@@ -133,3 +133,21 @@ exports.editPortfolio = async (req, res, next) => {
     });
   }
 };
+// for logout users
+exports.getPortfolioUser = async (req, res, next) => {
+  try {
+    const portfolio = await Portfolio.find({ owner: req.params.id });
+    if (!portfolio) {
+      return res.json({ message: "No portfolio" });
+    }
+    return res.status(200).json({
+      success: "success",
+      portfolio,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

@@ -5,6 +5,14 @@ const orderSchema = mongoose.Schema(
       type: String,
       required: [true, "please enter title"],
     },
+    rating: {
+      type: Number,
+      default: 1,
+    },
+    isRated: {
+      type: Boolean,
+      default: false,
+    },
     description: {
       type: String,
       required: [true, "please enter description"],

@@ -231,7 +231,6 @@ exports.createReview = async (req, res, next) => {
     await gig.save();
     res.status(201).json({ success: true, message: "Review added" });
   } catch (error) {
-    console.log("in cTXH");
     res.status(500).json({ success: false, message: error.message });
   }
 };
