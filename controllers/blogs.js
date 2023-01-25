@@ -148,7 +148,7 @@ exports.blogs = async (req, res, next) => {
     const page = Number(req.query.page) - 1 || 0;
     const limit = Number(req.query.limit) || 5;
     const search = req.query.search || "";
-    let sort = req.query.sort || "price";
+    let sort = req.query.sort || "createdAt";
     let category = req.query.category || "All";
 
     const categoriesObj = await Category.find({});
@@ -167,7 +167,7 @@ exports.blogs = async (req, res, next) => {
     if (sort[1]) {
       sortBy[sort[0]] = sort[1];
     } else {
-      sortBy[sort[0]] = "asc";
+      sortBy[sort[0]] = -1;
     }
 
     //  req.query.price; // in obj like { gt: '1200', lt: '2000' }

@@ -11,7 +11,7 @@ exports.getGigs = async (req, res) => {
     const page = Number(req.query.page) - 1 || 0;
     const limit = Number(req.query.limit) || 10;
     const search = req.query.search || "";
-    let sort = req.query.sort || "price";
+    let sort = req.query.sort || "rating";
     let category = req.query.category || "All";
     let priceRange = { $gte: "0" };
 
@@ -31,7 +31,7 @@ exports.getGigs = async (req, res) => {
     if (sort[1]) {
       sortBy[sort[0]] = sort[1];
     } else {
-      sortBy[sort[0]] = "asc";
+      sortBy[sort[0]] = -1;
     }
 
     //  req.query.price; // in obj like { gt: '1200', lt: '2000' }

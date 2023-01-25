@@ -12,7 +12,7 @@ exports.getJobs = async (req, res, next) => {
     const page = Number(req.query.page) - 1 || 0;
     const limit = Number(req.query.limit) || 10;
     const search = req.query.search || "";
-    let sort = req.query.sort || "price";
+    let sort = req.query.sort || "rating";
     let category = req.query.category || "All";
     let priceRange = { $gte: "0" };
 
@@ -32,7 +32,7 @@ exports.getJobs = async (req, res, next) => {
     if (sort[1]) {
       sortBy[sort[0]] = sort[1];
     } else {
-      sortBy[sort[0]] = "asc";
+      sortBy[sort[0]] = -1;
     }
     if (req.query.price) {
       priceRange = JSON.stringify(req.query.price);
