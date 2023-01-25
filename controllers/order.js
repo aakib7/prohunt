@@ -2,6 +2,10 @@ const User = require("../models/User");
 const Job = require("../models/Job");
 const Gig = require("../models/Gig");
 const Order = require("../models/Order");
+const stripe = require("stripe")(
+  "sk_test_51MUGpoHrDuPWRVVLNOuRVf9sR1LI4zSiFpnDSEM8jrZTGihV0UVLJQQdBpsqBy7ORmr6c16cDJ6yPBOyT7krMQql00YRwxvcor"
+);
+const Payment = require("../models/Payment");
 
 exports.createOrder = async (req, res, next) => {
   try {
@@ -310,5 +314,28 @@ exports.rateOrder = async (req, res, next) => {
       success: false,
       message: error.message,
     });
+  }
+};
+// create Payment
+module.exports.createPayment = async (req, res) => {
+  try {
+    var newPayment = {
+      sendBy: req.user._id,
+      sendTo: req.body.sendTo,
+      amount: req.body.amount,
+    };
+
+    const payment = await stripe.paymentIntents.create({
+      amount: req.body.amount * 100,
+      currency: "usd",
+    });
+    await Payment.create(newPayment);
+    await Order.findByIdAndUpdate(req.body.orderId, { payment: true });
+    return res.status(200).send({
+      clientSecret: payment.client_secret,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Something went wrong");
   }
 };

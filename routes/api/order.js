@@ -11,6 +11,7 @@ const {
   completeOrder,
   getFreelancerTeamOrder,
   rateOrder,
+  createPayment,
 } = require("../../controllers/order");
 const { isAuthenticated } = require("../../middlewares/auth");
 
@@ -24,5 +25,6 @@ router.post("/manage/:id", isAuthenticated, manageProject);
 router.post("/changeStatus/:id", isAuthenticated, milstoneStatusChange);
 router.get("/complete/:id", isAuthenticated, completeOrder);
 router.put("/rate/:id", isAuthenticated, rateOrder);
+router.post("/payment", isAuthenticated, createPayment);
 
 module.exports = router;

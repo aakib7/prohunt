@@ -58,6 +58,10 @@ const orderSchema = mongoose.Schema(
     ],
     progress: { type: Number, default: 0 },
     orderDate: { type: Date, default: new Date() },
+    payment: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

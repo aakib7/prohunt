@@ -1,6 +1,10 @@
 const Job = require("../models/Job");
 const Gig = require("../models/Gig");
 const User = require("../models/User");
+const Order = require("../models/Order");
+const Blogs = require("../models/BlogPost");
+const Subsecription = require("../models/Subsecription");
+const ContactUs = require("../models/ContactUs");
 
 // total
 
@@ -48,10 +52,9 @@ exports.getUsers = async (req, res, next) => {
     });
   }
 };
-//
+// user joins in perticular month
 exports.getUserJoinMonth = async (req, res, next) => {
   try {
-    var today = new Date();
     const users = await User.aggregate([
       {
         $group: {
@@ -74,6 +77,142 @@ exports.getUserJoinMonth = async (req, res, next) => {
     });
   } catch (error) {
     return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// order details
+exports.getOrderDetails = async (req, res, next) => {
+  try {
+    const orders = await Order.count();
+    const blogs = await Blogs.count();
+    const ordersCompleted = await Order.find({ isCompleted: true }).count();
+    var orderInProgress = orders - ordersCompleted;
+    return res.status(200).json({
+      orders,
+      ordersCompleted,
+      orderInProgress,
+      blogs,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+// oders month vise
+exports.getOrderMonthsVise = async (req, res, next) => {
+  try {
+    const orders = await Order.aggregate([
+      {
+        $group: {
+          _id: {
+            month: { $month: "$createdAt" },
+            year: { $year: "$createdAt" },
+          },
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+    let data = [];
+    orders.map((order) => {
+      let d = {
+        month: order._id.month,
+        orders: order.count,
+      };
+      data.push(d);
+    });
+
+    return res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+// subscription
+exports.addSubscription = async (req, res, next) => {
+  try {
+    const subscriptionData = {
+      email: req.body.email,
+    };
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({
+        message: "Please Enter Email To Get latest News",
+      });
+    } else {
+      const newsuscription = await Subsecription.create(subscriptionData);
+      return res.status(200).json({
+        success: true,
+        subscriptions: newsuscription,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+// contacts us
+exports.addContactUs = async (req, res, next) => {
+  try {
+    const contactForm = {
+      email: req.body.email,
+      name: req.body.name,
+      message: req.body.message,
+    };
+    const { email, name, message } = req.body;
+    if ((!email, !name, !message)) {
+      return res.status(400).json({
+        message: "Please Fill the Data",
+      });
+    }
+    const newContactForm = await ContactUs.create(contactForm);
+    return res.status(200).json({
+      success: true,
+      contacts: newContactForm,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+// get Subsecriptons
+exports.getSubscriptions = async (req, res, next) => {
+  try {
+    const subscriptions = await Subsecription.find({});
+    return res.status(200).json({
+      success: true,
+      subscriptions,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+// getcontacts us
+exports.getContactUs = async (req, res, next) => {
+  try {
+    const contact = await ContactUs.find({});
+    return res.status(200).json({
+      success: true,
+      contact,
+    });
+  } catch (error) {
+    res.status(500).json({
       success: false,
       message: error.message,
     });

@@ -5,11 +5,23 @@ const {
   totalRecord,
   getUsers,
   getUserJoinMonth,
+  getOrderDetails,
+  getOrderMonthsVise,
+  addContactUs,
+  addSubscription,
+  getSubscriptions,
+  getContactUs,
 } = require("../../controllers/admin");
 
 // router.post("/:id", isAuthenticated, createBid);
-router.get("/", isAuthenticated, totalRecord);
-router.get("/users", isAuthenticated, getUsers);
-router.get("/users/join", isAuthenticated, getUserJoinMonth);
+router.get("/", totalRecord);
+router.get("/users", getUsers);
+router.get("/users/join", getUserJoinMonth);
+router.get("/orders", getOrderDetails);
+router.get("/orders/details", getOrderMonthsVise);
+router.post("/contact", addContactUs);
+router.post("/subsecription", addSubscription);
+router.get("/contact", getContactUs);
+router.get("/subscription", getSubscriptions);
 
 module.exports = router;
