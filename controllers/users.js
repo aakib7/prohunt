@@ -544,3 +544,19 @@ exports.getUserPortfolio = async (req, res, next) => {
     });
   }
 };
+// add users quiz score
+exports.addScore = async (req, res, next) => {
+  try {
+    await User.findByIdAndUpdate(req.user.id, {
+      $set: { quizScore: req.body.quizScore },
+    });
+    return res.status(400).json({
+      success: true,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

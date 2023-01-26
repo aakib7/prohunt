@@ -18,6 +18,7 @@ const {
   getMyBlogs,
   getUser,
   getUsers,
+  addScore,
 } = require("../../controllers/users");
 const { isAuthenticated } = require("../../middlewares/auth");
 const { uploadProfilePicture } = require("../../middlewares/uploadFiles");
@@ -51,5 +52,6 @@ router.post("/forget-password", forgetPassword);
 router.post("/password-reset/:id/:token", setNewPassword);
 router.post("/changepassword", isAuthenticated, changePassword);
 router.put("/update", isAuthenticated, upload.single("users"), updateUser);
+router.put("/quiz", isAuthenticated, addScore);
 
 module.exports = router;

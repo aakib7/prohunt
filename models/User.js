@@ -125,6 +125,18 @@ const userSchema = mongoose.Schema(
       type: String,
       default: "English",
     },
+    quizScore: {
+      type: Number,
+      default: 0,
+    },
+    isBlocked: {
+      type: Boolean,
+      default: false,
+    },
+    reports: {
+      type: Number,
+      default: 0,
+    },
     resetPasswordToken: String,
     resetPasswordExpire: Date,
   },
