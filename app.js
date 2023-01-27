@@ -23,6 +23,7 @@ var messageRouter = require("./routes/api/message");
 var reportRouter = require("./routes/api/report");
 var portfolioRouter = require("./routes/api/portfolio");
 var admin = require("./routes/api/admin");
+var reportUser = require("./routes/api/reportUser");
 
 var app = express();
 
@@ -66,6 +67,7 @@ app.use("/message", messageRouter);
 app.use("/report", reportRouter);
 app.use("/portfolio", portfolioRouter);
 app.use("/admin", admin);
+app.use("/report/user", reportUser);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
