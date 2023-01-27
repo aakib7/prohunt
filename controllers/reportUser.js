@@ -19,7 +19,10 @@ exports.reportUser = async (req, res, next) => {
 
 exports.getReportUser = async (req, res, next) => {
   try {
-    const reports = await ReportUser.find({});
+    const reports = await ReportUser.find({}).populate(
+      "reportedBy reportedUser",
+      "userName email"
+    );
     return res.status(200).json({
       success: true,
       reports,

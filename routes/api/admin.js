@@ -11,6 +11,7 @@ const {
   addSubscription,
   getSubscriptions,
   getContactUs,
+  sendWarning,
 } = require("../../controllers/admin");
 
 // router.post("/:id", isAuthenticated, createBid);
@@ -23,5 +24,6 @@ router.post("/contact", addContactUs);
 router.post("/subsecription", addSubscription);
 router.get("/contact", getContactUs);
 router.get("/subscription", getSubscriptions);
+router.post("/warning", sendWarning);
 
 module.exports = router;

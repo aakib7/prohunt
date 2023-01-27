@@ -5,6 +5,7 @@ const Order = require("../models/Order");
 const Blogs = require("../models/BlogPost");
 const Subsecription = require("../models/Subsecription");
 const ContactUs = require("../models/ContactUs");
+const sendEmail = require("../middlewares/sendEmail");
 
 // total
 
@@ -210,6 +211,24 @@ exports.getContactUs = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       contact,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+// send warning
+exports.sendWarning = async (req, res, next) => {
+  try {
+    let email = req.body.email;
+    console.log(email);
+    let message =
+      "Resently ProHunt received a Complain about you.Please be care full. Thanks!!";
+    await sendEmail(email, "Complain Warning", message);
+    return res.status(200).json({
+      success: true,
     });
   } catch (error) {
     res.status(500).json({
