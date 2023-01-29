@@ -339,3 +339,27 @@ module.exports.createPayment = async (req, res) => {
     res.status(500).send("Something went wrong");
   }
 };
+module.exports.getPayment = async (req, res) => {
+  try {
+    // console.log("d");
+    // console.log("d");
+    // console.log("d");
+    const payments = await Payment.find({}).populate(
+      "sendBy sendTo",
+      "userName email"
+    );
+    if (!payments) {
+      return res.status(404).json({
+        success: false,
+        message: "No Payment",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      payments,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Something went wrong");
+  }
+};

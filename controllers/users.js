@@ -119,6 +119,11 @@ exports.login = async (req, res) => {
         success: false,
         message: "User is not Varified. Please Check Your Mail",
       });
+    } else if (user.isBlocked) {
+      return res.status(400).json({
+        success: false,
+        message: "User is Blocked.Please contact admin.",
+      });
     } else {
       const validPassword = await bcrypt.compare(password, user.password);
       if (!validPassword) {
@@ -425,7 +430,8 @@ exports.getAllFreelancer = async (req, res, next) => {
       role: "freelancer",
     })
       .skip(page * limit)
-      .limit(limit);
+      .limit(limit)
+      .sort({ rating: -1, numReviews: -1 });
     if (!freelancer) {
       return res.status(404).json({
         success: false,

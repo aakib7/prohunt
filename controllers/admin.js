@@ -8,7 +8,6 @@ const ContactUs = require("../models/ContactUs");
 const sendEmail = require("../middlewares/sendEmail");
 
 // total
-
 exports.totalRecord = async (req, res, next) => {
   try {
     // if (req.user.role !== "admin") {
@@ -31,7 +30,6 @@ exports.totalRecord = async (req, res, next) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
 // all users
 exports.getUsers = async (req, res, next) => {
   try {
@@ -83,7 +81,6 @@ exports.getUserJoinMonth = async (req, res, next) => {
     });
   }
 };
-
 // order details
 exports.getOrderDetails = async (req, res, next) => {
   try {
@@ -229,6 +226,24 @@ exports.sendWarning = async (req, res, next) => {
     await sendEmail(email, "Complain Warning", message);
     return res.status(200).json({
       success: true,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+// Block and unblock user
+exports.block = async (req, res, next) => {
+  try {
+    const { id, block } = req.body;
+    await User.findByIdAndUpdate(id, {
+      $set: { isBlocked: block },
+    });
+    res.status(200).json({
+      success: true,
+      message: "Success",
     });
   } catch (error) {
     res.status(500).json({

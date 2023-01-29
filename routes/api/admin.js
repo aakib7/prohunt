@@ -12,6 +12,7 @@ const {
   getSubscriptions,
   getContactUs,
   sendWarning,
+  block,
 } = require("../../controllers/admin");
 
 // router.post("/:id", isAuthenticated, createBid);
@@ -25,5 +26,6 @@ router.post("/subsecription", addSubscription);
 router.get("/contact", getContactUs);
 router.get("/subscription", getSubscriptions);
 router.post("/warning", sendWarning);
+router.post("/block/user", block);
 
 module.exports = router;
