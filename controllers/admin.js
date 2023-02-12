@@ -18,8 +18,8 @@ exports.totalRecord = async (req, res, next) => {
     // }
     const gigs = await Gig.count();
     const jobs = await Job.count();
-    const freelancer = await Gig.find({ role: "freelancer" }).count();
-    const employer = await Gig.find({ role: "employer" }).count();
+    const freelancer = await User.find({ role: "freelancer" }).count();
+    const employer = await User.find({ role: "client" }).count();
     return res.status(200).json({
       gigs,
       jobs,

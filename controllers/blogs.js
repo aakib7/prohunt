@@ -145,6 +145,7 @@ exports.singleBlog = async (req, res, next) => {
 // @access  public
 exports.blogs = async (req, res, next) => {
   try {
+    console.log(req.query.limit);
     const page = Number(req.query.page) - 1 || 0;
     const limit = Number(req.query.limit) || 5;
     const search = req.query.search || "";

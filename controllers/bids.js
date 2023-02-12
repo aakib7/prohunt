@@ -70,6 +70,7 @@ exports.getBids = async (req, res, next) => {
     const job = await Job.findById(req.params.id).populate({
       path: "bids.owner",
     });
+
     if (!job) {
       return res.status(404).json({
         success: false,
